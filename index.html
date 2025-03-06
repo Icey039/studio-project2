@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Image Generator</title>
+    <style>
+        
+        body {
+            font-family: 'Orbitron', sans-serif; 
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #23042f, #69008f, #0b3d91); /* 渐变色背景 */
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            color: #fbff00;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #fbff00, 0 0 20px #fbff00;
+        }
+
+        p {
+            color: #ffffff;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+   
+        #charInput {
+            padding: 12px;
+            font-size: 1.2rem;
+            margin: 10px;
+            border: 2px solid #fbff00;
+            border-radius: 10px;
+            width: 60px;
+            text-align: center;
+            background-color: rgba(58, 7, 90, 0.8); 
+            color: white;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #charInput:focus {
+            border-color: #ff00ff;
+            box-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff; 
+        }
+
+        
+        #submitButton {
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            background-color: #fbff00;
+            color: #23042f;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #submitButton:hover {
+            background-color: #ffdd33;
+            transform: scale(1.05); 
+            box-shadow: 0 0 10px #fbff00, 0 0 20px #fbff00; 
+        }
+
+       
+        #displayedImage {
+            display: none; 
+            margin-top: 20px;
+            max-width: 90%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: fadeIn 1s ease; 
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .stars::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 1%, transparent 1%);
+            background-size: 20px 20px;
+            animation: twinkle 5s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            #charInput {
+                width: 50px;
+                font-size: 1rem;
+            }
+
+            #submitButton {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <h1>Space Image Generator</h1>
+    <p>Enter a letter (A-Z) and click "Show Image" to see a space-themed image based on your input!</p>
+
+    <input type="text" id="charInput" maxlength="1" placeholder="A">
+
+
+    <button onclick="displayImage()" id="submitButton">Show Image</button>
+
+    <img id="displayedImage" src="" alt="Displayed Image">
+
+
+    <script>
+        
+        const images = [
+            "https://images.unsplash.com/photo-1464802686167-b939a6910659?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // A - Galaxy
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSi04Ha2QI1a_EtZJTjy-oxdxT7rXb4Q67QuA&s", // B - Nebula
+            "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // C - Stars
+            "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // D - Earth from Space
+            "https://images.unsplash.com/photo-1457364887197-9150188c107b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // E - Moon
+            "https://images.unsplash.com/photo-1462332420958-a05d1e002413?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // F - Solar Flare
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // G - Space Station
+            "https://images.unsplash.com/photo-1464802686167-b939a6910659?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // H - Galaxy 2
+            "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // I - Nebula 2
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfHbpgG4TTzgpb8vvj4CEyW1PWPyAxo4nEcA&s", // J - Stars 2
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfHbpgG4TTzgpb8vvj4CEyW1PWPyAxo4nEcA&s", // K - Earth from Space 2
+            "https://images.prismic.io/mda-corp/a503c81e-a047-4…2Ccompress&rect=0%2C0%2C1920%2C1080&w=1920&h=1080", // L - Moon 2
+            "https://images.prismic.io/mda-corp/a503c81e-a047-4…2Ccompress&rect=0%2C0%2C1920%2C1080&w=1920&h=1080", // M - Solar Flare 2
+            "https://i0.wp.com/www.sciencenews.org/wp-content/u…2/YIR-SPACEMISSION-MAIN.jpeg?fit=1030%2C580&ssl=1", // N - Space Station 2
+            "https://images.unsplash.com/photo-1464802686167-b939a6910659?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // O - Galaxy 3
+            "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // P - Nebula 3
+            "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // Q - Stars 3
+            "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // R - Earth from Space 3
+            "https://images.unsplash.com/photo-1457364887197-9150188c107b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // S - Moon 3
+            "https://images.unsplash.com/photo-1462332420958-a05d1e002413?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // T - Solar Flare 3
+            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // U - Space Station 3
+            "https://images.unsplash.com/photo-1464802686167-b939a6910659?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // V - Galaxy 4
+            "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // W - Nebula 4
+            "https://images.unsplash.com/photo-1454789548928-9efd52dc4031?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // X - Stars 4
+            "https://images.unsplash.com/photo-1468276311594-df7cb65d8df6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80", // Y - Earth from Space 4
+            "https://images.unsplash.com/photo-1457364887197-9150188c107b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"  // Z - Moon 4
+        ];
+
+        function displayImage() {
+            const input = document.getElementById("charInput").value.toUpperCase();
+            const imgElement = document.getElementById("displayedImage");
+            
+          
+            const index = input.charCodeAt(0) - 65; 
+            if (index >= 0 && index < images.length) {
+                imgElement.src = images[index];
+                imgElement.style.display = "block";
+            } else {
+                
+                imgElement.src = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmtkdnJhMXY4Njd1cXR3MTM3MW1nMzZ1NXNhNHlhOHA0MWF2dDUzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13dRJkj5wgKq9q/giphy.gif";
+                imgElement.style.display = "block";
+            }
+        }
+    </script>
+
+</body>
+</html>
